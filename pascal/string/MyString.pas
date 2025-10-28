@@ -2,9 +2,47 @@ program MyString;
 var
   s1: string;
 
-procedure StrToInt();
+function DigitsCheck(checking_var: integer): integer;
 begin
-  {ParamStr() возвращает строковый тип, чтобы его перевести в числовой тип, надо по символьно перевести в число с помощью ord}
+  if checking_var = 48 then
+    DigitsCheck := 0
+  else if  checking_var = 49 then
+    DigitsCheck := 1
+  else if checking_var = 50 then
+    DigitsCheck := 2
+  else if checking_var = 51 then
+    DigitsCheck := 3
+  else if checking_var = 52 then
+    DigitsCheck := 4
+  else if checking_var = 53 then
+    DigitsCheck := 5
+  else if checking_var = 54 then
+    DigitsCheck := 6
+  else if checking_var = 55 then
+    DigitsCheck := 7
+  else if checking_var = 56 then
+    DigitsCheck := 8
+  else if checking_var = 57 then
+    DigitsCheck := 9
+end;
+
+procedure StrToInt(s: string; var SaveVar: integer; ok: word);
+var
+  i, tmp, count: integer;
+begin
+  count := 0;
+  ok := 0;
+  for i := 1 to length(s) do
+    begin
+      count := count + 1;
+      if s[i] in ['1'..'9'] then
+        begin
+          tmp := ord(s[i]);
+          SaveVar := DigitsCheck(tmp)
+        end
+      else
+        ok := count;
+    end;
 end;
 
 function MyLowerCase(s: string): string;

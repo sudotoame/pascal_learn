@@ -1,4 +1,4 @@
-progam ex01;
+program ex01;
 
 const
   ch1 = '@';
@@ -7,19 +7,41 @@ const
 var
   i, ArgumentLength, ReapetLength: integer;
   LongestString, RepeatString: string;
-  PrintNoReapeat, PrintHaveAt, PrintHaveDot: string;
-  repeated, haveat, havedot, alldigits: boolean;
+  PrintIsCommon ,PrintNoReapeat, PrintHaveAt, PrintLatSymbols, PrintHaveDot, PrintWithRepeatSymbols, PrintOnlyDigits: string;
+  repeated, haveat, havedot, alldigits, iscommon, withrepeatsymbols, havelatsymb : boolean;
 
-procedure DigitArg(StrLength: integer; var s: string ;var alldigits: boolean);
+procedure OnlyDigitArg(s: string; var alldigits: boolean);
 var
-  j, k: integer;
+  i: integer;
 begin
-  for j := 1 to StrLength do
+  for i := 1 to length(s) do
     begin
-      if s[j] = chr(ord('1')) then
-        alldigits = true
+      if not (s[i] in ['0'..'9']) then
+        begin
+          alldigits := false;
+          break
+        end
+      else
+        alldigits := true
     end;
-    { TODO: make StrToInt, IntToStr}
+end;
+
+procedure WithRepeatSym(s: string; var withrepeatsymbols: boolean);
+const
+  one = 1;
+var 
+  i, j: integer;
+begin
+  for i := 1 to length(s) do
+    begin
+      for j := i + 1 to length(s) do
+        if s[i] = s[j] then
+          withrepeatsymbols := true
+        else
+          withrepeatsymbols := false;
+        if length(s) = 1 then
+          withrepeatsymbols := true
+    end;
 end;
 
 procedure ReapetArg(ReapetLength: integer; var RepeatString: string; var repeated: boolean);
@@ -69,6 +91,29 @@ begin
     end;
 end;
 
+procedure HaveLatinSymbols(s: string; var havelatsymb: boolean);
+var
+  i: integer;
+begin
+  for i := 1 to length(s) do
+  begin
+    if (s[i] in ['A'..'Z']) or (s[i] in ['a'..'z']) then
+      havelatsymb := true
+  end;
+end;
+
+procedure CommonCh(s: string; var iscommon: boolean);
+var
+  i, index: integer;
+begin
+  index := 1;
+  for i := 2 to length(s) do
+    begin
+      if s[index] = s[i] then
+        iscommon := true
+    end;
+end;
+
 begin
   i := 0;
   LongestString := '';
@@ -77,6 +122,10 @@ begin
   PrintHaveDot := '';
   PrintNoReapeat := '';
   PrintHaveAt := '';
+  PrintOnlyDigits := '';
+  PrintWithRepeatSymbols := '';
+  PrintLatSymbols := '';
+  PrintIsCommon := '';
 
   for i := 1 to ParamCount do
     begin
@@ -90,24 +139,43 @@ begin
       havedot := false;
       haveat := false;
       alldigits := false;
+      withrepeatsymbols := false;
+      havelatsymb := false;
+      iscommon := false;
 
       HaveSymb(ReapetLength, RepeatString, ch1, haveat);
       HaveSymb(ReapetLength, RepeatString, ch2, havedot);
       ReapetArg(ReapetLength, RepeatString, repeated);
-      DigitArg(ReapetLength, RepeatString, alldigits);
+      OnlyDigitArg(RepeatString, alldigits);
+      WithRepeatSym(RepeatString, withrepeatsymbols);
+      HaveLatinSymbols(RepeatString, havelatsymb);
+      CommonCh(RepeatString, iscommon);
 
+      if iscommon then
+        PrintIsCommon := PrintIsCommon + ' ' + ParamStr(i);
+      if havelatsymb then
+        PrintLatSymbols := PrintLatSymbols + ' ' + ParamStr(i);
+      if withrepeatsymbols then
+        PrintWithRepeatSymbols := PrintWithRepeatSymbols + ' ' + ParamStr(i);
+      if alldigits then
+        PrintOnlyDigits := PrintOnlyDigits + ' ' + ParamStr(i);
       if not repeated then
         PrintNoReapeat := PrintNoReapeat + ' ' + ParamStr(i);
       if haveat then
         PrintHaveAt := PrintHaveAt + ' ' + ParamStr(i);
       if havedot then
         PrintHaveDot := PrintHaveDot + ' ' + ParamStr(i);
-      if alldigits then
-        writeln('all digit args: ', ParamStr(i));
     end;
 
-  writeln('Arg with one ".": ',PrintHaveDot);
-  writeln('Arg with one "@": ', PrintHaveAt);
-  writeln('Arg with no repeat symbols: ', PrintNoReapeat);
-  writeln('Longest Arguments: ', LongestString, ' | Number of characters: ', ArgumentLength);
+  if ParamCount >= 1 then
+    begin
+      writeln('Arg with common character with first character: ', PrintIsCommon);
+      writeln('Arg with lat symbols: ', PrintLatSymbols);
+      writeln('Arg with only digits: ', PrintOnlyDigits);
+      writeln('Arg with only repeat symbols: ', PrintWithRepeatSymbols);
+      writeln('Arg with one ".": ',PrintHaveDot);
+      writeln('Arg with one "@": ', PrintHaveAt);
+      writeln('Arg with no repeat symbols: ', PrintNoReapeat);
+      writeln('Longest Arguments: ', LongestString, ' | Number of characters: ', ArgumentLength);
+    end;
 end.
